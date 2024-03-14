@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <title>Dodgy Shop Locator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" style="width: 100%; height: 100vh;"></div>
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: { lat: 50.37506058242112, lng: -4.1431284833357305 }
+            });
+
+            var locations = [
+                { title: 'Sweets & Gifts', location: { lat: 50.37154828584822, lng: -4.142093153437481 } },
+                { title: 'Simply Local', location: { lat: 50.37065369662237, lng: -4.139148198819879 } },
+                { title: 'Premier', location: { lat: 50.372336506868606, lng: -4.142893577096434 } },
+                { title: 'Grenville Stores', location: { lat: 50.37194330443157, lng: -4.121864417554978 } },
+                { title: 'Santander', location: { lat: 50.37287850881886, lng: -4.142934988554131 } },
+                { title: 'Affordable Foods', location: { lat: 50.36865481587807, lng: -4.1171300192190925 } },
+                { title: 'Mutley Bazzar', location: { lat: 50.38125036084887, lng: -4.1334778816794335 } },
+                { title: 'Co-op', location: { lat: 50.38713669792641, lng: -4.138927459796768 } },//
+                { title: 'Co-op', location: { lat: 50.38282292195737, lng: -4.13460967971716 } },//
+                { title: 'Co-op', location: { lat: 50.37651155390657, lng: -4.1573870024900375} },//
+                { title: 'Co-op', location: { lat: 50.36987318174982, lng: -4.173996293189338 } },//
+                { title: 'Co-op', location: { lat: 50.37585246628986, lng: -4.122987315975043 } },//
+                { title: 'Co-op', location: { lat: 50.36789561475284, lng: -4.139153692255695 } },//
+                { title: 'Co-op', location: { lat: 50.37900658836401, lng: -4.174586845747536 } },//
+                { title: 'Co-op', location: { lat: 50.37363974803337, lng: -4.136200929464708 } },//
+                { title: 'Co-op', location: { lat: 50.38099021123844, lng: -4.165992386752878 } },//
+                { title: 'Co-op', location: { lat: 50.37035483765983, lng: -4.122374326659261 } },//
+                { title: 'Co-op', location: { lat: 50.551898221980004, lng: -4.141989100550029 } },
+                { title: 'Co-op', location: { lat: 50.55055064779573, lng: -4.146400752454599 } },
+                { title: 'Co-op', location: { lat: 50.49168582059073, lng: -4.085346217332061 } },
+                { title: 'Co-op', location: { lat: 50.480287701401146, lng: -4.189603496940323 } },
+                { title: 'Hursts', location: { lat: 50.399726995441846, lng:-4.135825882343496}},
+                { title: 'Albert Express', location: { lat: 50.37843138590947, lng: -4.178371035481001 } },
+                { title: 'St Levan Valley', location: { lat: 50.383582319067884, lng: -4.171814790009499 } },
+                { title: 'Brook Stores', location: { lat: 50.38138436558346, lng: -4.043608126731745 } },
+            ];
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < locations.length; i++) {
+                if (locations[i].title == "Santander") {
+                    var icon = {
+                        url: 'https://theorytest.org.uk/wp-content/uploads/2021/01/danger-sign.png',
+                        scaledSize: new google.maps.Size(30, 30),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(11, 40)
+                    };
+                }
+                else if (locations[i].title == "Co-op") {
+                    var icon = {
+                        url: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/The_Co-Operative_clover_leaf_logo.svg',
+                        scaledSize: new google.maps.Size(30, 30),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(11, 40)
+                    };
+                }
+                else {
+                    var icon = {
+                        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Google_Maps_pin.svg/1200px-Google_Maps_pin.svg.png',
+                        scaledSize: new google.maps.Size(23, 40),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(11, 40)
+                    };
+                }
+                var position = locations[i].location;
+                var title = locations[i].title;
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: position,
+                    title: title,
+                    animation: google.maps.Animation.DROP,
+                    icon: icon,
+                    id: i
+                });
+                bounds.extend(marker.position);
+                marker.addListener('click', function () {
+                    populateInfoWindow(this, largeInfowindow);
+                });
+
+            }
+
+            var largeInfowindow = new google.maps.InfoWindow();
+            function populateInfoWindow(marker, infowindow) {
+                if (infowindow.marker != marker) {
+                    infowindow.marker = marker;
+                    infowindow.setContent('<div>' + marker.title + '</div>');
+                    infowindow.open(map, marker);
+                    infowindow.addListener('closeclick', function () {
+                        infowindow.marker = null;
+                    });
+                }
+            }
+            //map.fitBounds(bounds);
+
+            // Hide Maps POIs
+            const styles = {
+                default: [],
+                hide: [
+                    {
+                        featureType: "poi",
+                        stylers: [{ visibility: "off" }],
+                    },
+                    {
+                        featureType: "transit",
+                        elementType: "labels.icon",
+                        stylers: [{ visibility: "off" }],
+                    },
+                ],
+            };
+
+            map.setOptions({ styles: styles["hide"] });
+        }
+    </script>
+    <script async defer
+        src='https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap'>
+        </script>
+</body>
+
+</html>
